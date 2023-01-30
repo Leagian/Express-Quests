@@ -16,6 +16,9 @@ const movieHandlers = require("./movieHandlers");
 app.get("/api/users", movieHandlers.getUsers);
 app.get("/api/users/:id", movieHandlers.getUsersById);
 
+app.post("/api/movies", movieHandlers.postMovie);
+app.post("/api/users", movieHandlers.postUsers);
+
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
 
