@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const { validateMovie } = require("./validators.js");
-const { hashPassword } = require("./auth.js");
+const { hashPassword, verifyPassword, verifyToken } = require("./auth.js");
 
 const app = express();
 app.use(express.json());
@@ -19,13 +19,23 @@ app.get("/", welcome);
 
 const movieHandlers = require("./movieHandlers");
 
+// the public routes
+
 app.get("/api/users", movieHandlers.getUsers);
 app.get("/api/users/:id", movieHandlers.getUsersById);
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
-
-app.post("/api/movies", movieHandlers.postMovie);
 app.post("/api/users", hashPassword, movieHandlers.postUsers);
+app.post(
+  "/api/login",
+  userHandlers.getUserByEmailWithPasswordAndPassToNext,
+  verifyPassword
+);
+
+// then the routes to protect
+app.use(verifyToken);
+
+app.post("/api/movies", verifyToken, movieHandlers.postMovie);
 app.post("/api/movies", validateMovie, movieHandlers.postMovie);
 app.post("/api/users", validateUser, movieHandlers.postUsers);
 

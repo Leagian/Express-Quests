@@ -59,7 +59,7 @@ const postUsers = (req, res) => {
     database
       .query(
         "update movies set title = ?, director = ?, year = ?, color = ?, duration = ?, hashedPassword = ? where id = ?",
-        [firstname, lastname, email, city, language, hashedPassword]
+        [firstname, lastname, email, city, language, hashedPassword, id]
       )
       .then(([result]) => {
         if (result.affectedRows === 0) {
@@ -93,9 +93,32 @@ const postUsers = (req, res) => {
   };
 };
 
+// quest 8 password
+const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+  const { email } = req.body;
+
+  database
+
+    .query("select * from users where email = ?", [email])
+    .then(([users]) => {
+      if (users[0] != null) {
+        req.user = users[0];
+        next();
+      } else {
+        res.sendStatus(401);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+
+      res.status(500).send("Error retrieving data from database");
+    });
+};
+
 module.exports = {
   getUsers,
   getUsersById,
   postUsers,
   updateUser,
+  getUserByEmailWithPasswordAndPassToNext,
 };
